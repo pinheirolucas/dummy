@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httputil"
+
+	"github.com/rs/cors"
 )
 
 func main() {
@@ -19,7 +21,7 @@ func main() {
 
 	addr := fmt.Sprintf("%s:%d", host, port)
 	fmt.Printf("Listening for HTTP requests at %s\n", addr)
-	http.ListenAndServe(addr, createServerHandler(responseStatus))
+	http.ListenAndServe(addr, cors.AllowAll().Handler(createServerHandler(responseStatus)))
 }
 
 func createServerHandler(status int) http.HandlerFunc {
@@ -32,6 +34,7 @@ func createServerHandler(status int) http.HandlerFunc {
 		fmt.Printf("%+s\n\n\n", string(dump))
 
 		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
 		w.WriteHeader(status)
 	}
 }
